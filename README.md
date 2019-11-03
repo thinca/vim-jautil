@@ -4,7 +4,7 @@
 
 jautil.vim is a Vim script library for Japanese characters.
 
-See [help document](doc/jautil.txt) for detail.
+See [help document](doc/jautil.jax) for detail.
 
 
 ## License
