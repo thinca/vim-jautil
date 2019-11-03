@@ -1,0 +1,272 @@
+scriptencoding utf-8
+
+Describe jautil#convert()
+  Context ひらがな/カタカナ
+    It ひらがなをカタカナに変換する
+      let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+      let expect = 'ABC 123 !? ａｂｃ　１２３　！？　アイウカキク　ｻﾞｼﾞｽﾞ'
+      let target = 'hiragana'
+      Assert Equals(jautil#convert(text, target), expect)
+    End
+
+    It カタカナをひらがなに変換する
+      let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+      let expect = 'ABC 123 !? ａｂｃ　１２３　！？　あいうかきく　ｻﾞｼﾞｽﾞ'
+      let target = 'katakana'
+      Assert Equals(jautil#convert(text, target), expect)
+    End
+
+    It ひらがなとカタカナを相互に変換する
+      let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+      let expect = 'ABC 123 !? ａｂｃ　１２３　！？　アイウかきく　ｻﾞｼﾞｽﾞ'
+      let target = 'hirakata'
+      Assert Equals(jautil#convert(text, target), expect)
+    End
+  End
+
+  Context 全角/半角
+    Context 全角→半角
+      It 省略時は変換可能な全ての全角文字を半角文字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? abc 123 !? あいうｶｷｸ ｻﾞｼﾞｽﾞ'
+        let target = 'zenkaku'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 全角数字を半角数字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? ａｂｃ　123　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'zenkaku:number'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 全角英字を半角英字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? abc　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'zenkaku:alpha'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 全角カタカナを半角カタカナに変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? ａｂｃ　１２３　！？　あいうｶｷｸ　ｻﾞｼﾞｽﾞ'
+        let target = 'zenkaku:kana'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 全角記号を半角記号に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? ａｂｃ　１２３　!?　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'zenkaku:symbol'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 全角スペースを半角スペースに変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? ａｂｃ １２３ ！？ あいうカキク ｻﾞｼﾞｽﾞ'
+        let target = 'zenkaku:space'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 全角英数を半角英数に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? abc　123　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'zenkaku:alnum'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 変換可能な全角アスキー文字を半角アスキー文字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? abc 123 !? あいうカキク ｻﾞｼﾞｽﾞ'
+        let target = 'zenkaku:ascii'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 変換可能な全ての全角文字を半角文字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? abc 123 !? あいうｶｷｸ ｻﾞｼﾞｽﾞ'
+        let target = 'zenkaku:all'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 全角英字と全角スペースを半角文字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? abc １２３ ！？ あいうカキク ｻﾞｼﾞｽﾞ'
+        let target = 'zenkaku:alpha+space'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+    End
+
+    Context 半角→全角
+      It 省略時は変換可能な全ての半角文字を全角文字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ　１２３　！？　ａｂｃ　１２３　！？　あいうカキク　ザジズ'
+        let target = 'hankaku'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角数字を全角数字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC １２３ !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'hankaku:number'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角英字を全角英字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'hankaku:alpha'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角カタカナを全角カタカナに変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ザジズ'
+        let target = 'hankaku:kana'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角記号を全角記号に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 ！？ ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'hankaku:symbol'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角スペースを全角スペースに変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC　123　!?　ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'hankaku:space'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角英数を全角英数に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ １２３ !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'hankaku:alnum'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 変換可能な半角アスキー文字を全角アスキー文字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ　１２３　！？　ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'hankaku:ascii'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 変換可能な全ての半角文字を全角文字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ　１２３　！？　ａｂｃ　１２３　！？　あいうカキク　ザジズ'
+        let target = 'hankaku:all'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角英字と半角スペースを全角文字に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ　123　!?　ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'hankaku:alpha+space'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+    End
+
+    Context 半角←→全角
+      It 省略時は変換可能な全ての半角文字と全角文字を相互に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ　１２３　！？　abc 123 !? あいうｶｷｸ ザジズ'
+        let target = 'zenhan'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角数字と全角数字を相互に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC １２３ !? ａｂｃ　123　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'zenhan:number'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角英字と全角英字を相互に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ 123 !? abc　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'zenhan:alpha'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角カタカナと全角カタカナを相互に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 !? ａｂｃ　１２３　！？　あいうｶｷｸ　ザジズ'
+        let target = 'zenhan:kana'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角記号と全角記号を相互に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC 123 ！？ ａｂｃ　１２３　!?　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'zenhan:symbol'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角スペースと全角スペースを相互に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ABC　123　!?　ａｂｃ １２３ ！？ あいうカキク ｻﾞｼﾞｽﾞ'
+        let target = 'zenhan:space'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角英数と全角英数を相互に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ １２３ !? abc　123　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let target = 'zenhan:alnum'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 変換可能な半角アスキー文字と全角アスキー文字を相互に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ　１２３　！？　abc 123 !? あいうカキク ｻﾞｼﾞｽﾞ'
+        let target = 'zenhan:ascii'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 変換可能な全ての半角文字と全角文字を相互に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ　１２３　！？　abc 123 !? あいうｶｷｸ ザジズ'
+        let target = 'zenhan:all'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+
+      It 半角英字、半角スペースと全角文字を相互に変換する
+        let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+        let expect = 'ＡＢＣ　123　!?　abc １２３ ！？ あいうカキク ｻﾞｼﾞｽﾞ'
+        let target = 'zenhan:alpha+space'
+        Assert Equals(jautil#convert(text, target), expect)
+      End
+    End
+  End
+
+  It target に配列を指定できる
+    let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+    let expect = 'ABC 123 !? ａｂｃ　１２３　！？　あいうかきく　ざじず'
+    let target = ['hankaku:kana', 'katakana']
+    Assert Equals(jautil#convert(text, target), expect)
+  End
+
+  It target 引数を先に渡しても動く
+    let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+    let expect = 'ABC 123 !? ａｂｃ　１２３　！？　アイウかきく　ｻﾞｼﾞｽﾞ'
+    let target = ['hirakata']
+    Assert Equals(jautil#convert(target, text), expect)
+  End
+
+  It 無効な target はエラー
+    let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+    let expect = 'ABC 123 !? ａｂｃ　１２３　！？　アイウかきく　ｻﾞｼﾞｽﾞ'
+    let target = 'hoge'
+    Throws /^jautil: Invalid target: hoge$/ jautil#convert(text, target)
+  End
+
+  It 無効な type はエラー
+    let text = 'ABC 123 !? ａｂｃ　１２３　！？　あいうカキク　ｻﾞｼﾞｽﾞ'
+    let expect = 'ABC 123 !? ａｂｃ　１２３　！？　アイウかきく　ｻﾞｼﾞｽﾞ'
+    let target = 'hankaku:hoge'
+    Throws /^jautil: Invalid type: hoge$/ jautil#convert(text, target)
+  End
+End

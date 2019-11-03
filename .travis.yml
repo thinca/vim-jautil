@@ -1,0 +1,87 @@
+language: generic
+git:
+  depth: 10
+
+env:
+  global:
+    - THEMIS_VERSION=v1.5.4
+
+cache:
+  directories:
+    - &cache_dir $HOME/cache
+
+before_install:
+  - mkdir -p ${HOME}/cache
+  - '[[ -d ${HOME}/cache/themis-${THEMIS_VERSION} ]] || git clone --depth 1 --branch ${THEMIS_VERSION} --single-branch https://github.com/thinca/vim-themis ${HOME}/cache/themis-${THEMIS_VERSION}'
+
+anchors:
+  linux: &linux
+    os: linux
+    dist: xenial
+    install:
+      - docker pull "thinca/vim:${VIM_VERSION}"
+    script:
+      - docker run --rm -it "thinca/vim:${VIM_VERSION}" --version
+      - docker run --rm -it -v "${PWD}:/root" -v "${HOME}/cache/themis-${THEMIS_VERSION}:/tmp/themis" --entrypoint /tmp/themis/bin/themis "thinca/vim:${VIM_VERSION}" --reporter dot
+  osx: &osx
+    os: osx
+    cache:
+      directories:
+        - *cache_dir
+        - $HOME/Library/Caches/Homebrew
+        - /usr/local/Homebrew/Library/Homebrew/vendor/
+        - /usr/local/Homebrew/Library/Taps/
+    addons:
+      homebrew:
+        packages:
+          - macvim
+        update: true
+    before_cache:
+      - brew cleanup
+    install:
+      - ln -fs "$(brew --prefix macvim)/bin/mvim" "/usr/local/bin/vim"
+    script:
+      - ${THEMIS_VIM:-vim} --version
+      - ${HOME}/cache/themis-${THEMIS_VERSION}/bin/themis --reporter dot
+  windows: &windows
+    os: windows
+    language: c  # 'generic' is not supported yet on windows
+    install:
+      - |
+        if [[ ${VIM_VERSION} = 'latest' ]]; then
+          VIM_URL=$(curl -s --retry 3 'https://vim-jp.org/redirects/vim/vim-win32-installer/latest/x64.json' | jq -r '.redirect_url')
+          if [[ -z "${VIM_URL}" ]]; then
+            echo "Can't get Vim's URL" >&2
+            exit 64
+          fi
+          VIM_VERSION=$(echo ${VIM_URL} | sed 's@.*/download/\([^/]*\).*@\1@')
+          if [[ -z "${VIM_VERSION}" ]]; then
+            echo "Can't detect Vim's version from URL(${VIM_URL})" >&2
+            exit 65
+          fi
+        fi
+      - |
+        if [[ ! -d ${HOME}/cache/vim-${VIM_VERSION} ]]; then
+          if [[ -z "${VIM_URL}" ]]; then
+            if [[ "${VIM_VERSION}" =~ "v7" ]]; then
+              VIM_URL=https://ftp.nluug.nl/pub/vim/pc/vim$(echo ${VIM_VERSION} | sed 's/[^0-9]//g')w32.zip
+            else
+              VIM_URL=https://github.com/vim/vim-win32-installer/releases/download/${VIM_VERSION}/gvim_$(echo ${VIM_VERSION} | sed 's/v//')_x64.zip
+            fi
+          fi
+          echo "Download from ${VIM_URL}"
+          curl --silent --location --output "${HOME}/cache/vim-${VIM_VERSION}.zip" "${VIM_URL}"
+          7z x "-o${HOME}/cache/vim-${VIM_VERSION}" "${HOME}/cache/vim-${VIM_VERSION}.zip"
+          rm "${HOME}/cache/vim-${VIM_VERSION}.zip"
+        fi
+      - export THEMIS_VIM=$(echo ${HOME}/cache/vim-${VIM_VERSION}/vim/*/vim.exe)
+    script:
+      - ${THEMIS_VIM:-vim} --version
+      - ${HOME}/cache/themis-${THEMIS_VERSION}/bin/themis.bat --reporter dot
+
+jobs:
+  include:
+    - <<: *linux
+      env: VIM_VERSION=latest
+    - <<: *windows
+      env: VIM_VERSION=latest
