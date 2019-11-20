@@ -1,10 +1,6 @@
----
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: 'bug'
-assignees: ''
----
+<!--
+If you fixing a bug already reported, use "Issue resolving" template instead.
+-->
 
 <!-- Please describe all sections -->
 
