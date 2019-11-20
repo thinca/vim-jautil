@@ -128,7 +128,7 @@ jautil#convert({str}, {target})			*jautil#convert()*
 
 	{target} に配列を渡すことで複数の変換を順番に適用することができます。
 >
-	echo jautil#convert(str, ['hankaku:kana', 'katakana']
+	echo jautil#convert(str, ['hankaku:kana', 'katakana'])
 <
 	{target} が配列の場合のみ、{str} と {target} の引数の順序を入れ替える
 	ことができます。これは Partial 関数を作る場合に便利です。
